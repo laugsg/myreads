@@ -1,92 +1,101 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { Component } from "react";
 import { search } from "../BooksAPI";
-import SearchTerms from "../BooksSearchTerms.json";
-import { Link } from "react-router-dom";
-
-// custom hooks
-import useBooksByTerm from "./useBooksByTerm";
 
 // components
+import SearchInput from "./searchInput";
+import SearchClose from "./searchClose";
 import BookItem from "./BookItem";
+import Loader from "./Loader";
 
-function SearchBooks({ shelfHandler }) {
-  const [term, setTerm] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
-  const bColl = useBooksByTerm()
-  
-  // custom hook
-  useMemo(() => {
-    (async () => {
-        console.log("bColl", bColl)
+// Search Terms
+import searchTerms from "../BooksSearchTerms.json";
 
-    })()
-  })
-
-  const inputHandler = (query) => {
-    setTerm(query.target.value);
-    // finder(query.target.value);
+class SearchBooks extends Component {
+  state = {
+    biblio: [],
+    found: [],
   };
 
-  const finder = async (query) => {
-    console.log("query", query);
-    const result = await SearchTerms.map( sTerm => (search(sTerm))).map( prom => prom.then(newF));
+  obtainDatabase = () => {
+    searchTerms.forEach((term) => {
+      search(term).then((res) => {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> obtainDatabase")
+        this.setState((prevState) => ({
+          biblio: [...prevState.biblio, res],
+        }));
+      });
+    });
   };
 
-  const newF = (response) => {
-    console.log("response",response)
+  cleanFoundBooks = () => {
+    this.setState({
+      found: [],
+    });
+  };
+
+  searchTerm = (query) => {
+    this.cleanFoundBooks();
+    let booksArr = []
+    this.state.biblio.map((booksArray) => {
+      booksArray.filter((book) => {
+        if (Object.keys(book).includes("authors")) {
+          book.authors.forEach((author) => {
+            if (author.includes(query)){
+              console.log("author",author)
+              // this.setState((prevState) => {
+              //   return {
+              //       found: [...prevState.found, book],
+              //     } 
+              // });
+              booksArr.push(book)
+            }
+          });
+        }
+
+        if (book.title.includes(query)){
+          // this.setState((prevState) => ({
+          //   found: [...prevState.found, book],
+          // }));
+          booksArr.push(book)
+        }
+
+      });
+    });
+    this.setState({
+      found: booksArr
+    })
+  };
+
+  componentDidMount() {
+    this.obtainDatabase();
   }
-
-  // const getSearch = async (searchTerm) => {
-  //   const response = await getSearchTerms(searchTerm.target.value);
-  // };
-  // const getSearchTerms = async (userquery) => {
-  //   let foundQuery = [];
-  //   const result = await SearchTerms.map(async (sTerm) => {
-  //     const response = await search(sTerm);
-  //     const filter = response.filter((item) => {
-  //       if (Object.keys(item).includes("authors")) {
-  //         item.authors.forEach((aItem) => {
-  //           if (aItem.includes(userquery)) foundQuery.push(item);
-  //           if (aItem.includes(userquery)) setFound(item);
-  //           if (aItem.includes(userquery)) console.log("filter loop:", item);
-  //         });
-  //       }
-  //     });
-  //     console.log("result loop:", "foundQuery", foundQuery);
-  //   });
-  // };
-
-  return (
-    <div className="search-books">
-      <div className="search-books-bar">
-        <Link to="/">
-          <button className="close-search">Close</button>
-        </Link>
-        <div className="search-books-input-wrapper">
-          {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-          <input
-            type="text"
-            onChange={inputHandler}
-            value={term}
-            placeholder="Search by title or author"
-          />
+  render() {
+              console.log("book", this.state.found)
+    return (
+      <div className="search-books">
+        <div className="search-books-bar">
+          <SearchClose />
+          <SearchInput searchTerm={this.searchTerm} />
+        </div>
+        <div className="search-books-results">
+          <ol className="books-grid">
+            {
+              this.state.biblio.length ? (
+                this.state.found.length ? (
+                  this.state.found.map((book) => (
+                    <BookItem book={book} key={Math.random()} />
+                  ))
+                ) : (
+                  "No Results..."
+                )
+              ) : (
+                <Loader />
+              )
+            }
+          </ol>
         </div>
       </div>
-      <div className="search-books-results">
-        <ol className="books-grid">
-          {
-            //found.length && found.map( book => (<BookItem book={book} shelfHandler={shelfHandler} key={Math.random()}/>))
-          }
-        </ol>
-      </div>
-    </div>
-  );
+    );
+  }
 }
 export default SearchBooks;

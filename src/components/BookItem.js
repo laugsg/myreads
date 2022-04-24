@@ -25,7 +25,9 @@ function BookItem({ shelfHandler, book }) {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: `url(${book.imageLinks.smallThumbnail})`,
+              backgroundImage: `url(${Object.keys(book).includes("imageLinks")
+              ? book.imageLinks.smallThumbnail 
+              : null})`,
             }}
           />
           <div className="book-shelf-changer">
