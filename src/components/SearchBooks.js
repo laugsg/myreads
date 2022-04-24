@@ -1,61 +1,61 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { search } from "../BooksAPI";
 import SearchTerms from "../BooksSearchTerms.json";
 import { Link } from "react-router-dom";
 
+// custom hooks
+import useBooksByTerm from "./useBooksByTerm";
+
 // components
 import BookItem from "./BookItem";
 
-function SearchBooks({shelfHandler}) {
+function SearchBooks({ shelfHandler }) {
   const [term, setTerm] = useState("");
-  const [found, setFound] = useState([]);
+  const [searchResult, setSearchResult] = useState([]);
+  const bColl = useBooksByTerm()
+  
+  // custom hook
+  useMemo(() => {
+    (async () => {
+        console.log("bColl", bColl)
+
+    })()
+  })
 
   const inputHandler = (query) => {
-    const value = query.target.value;
-    setTerm(value);
-    getSearch(query);
+    setTerm(query.target.value);
+    // finder(query.target.value);
   };
 
-  const getSearch = async (searchTerm) => {
-    const response = await getSearchTerms(searchTerm.target.value);
-    // console.log("getSearch", response);
+  const finder = async (query) => {
+    console.log("query", query);
+    const result = await SearchTerms.map( sTerm => (search(sTerm))).map( prom => prom.then(newF));
   };
 
-  const getSearchTerms = async (userquery) => {
-    let foundQuery = [];
-    const result = await SearchTerms.map(async (sTerm) => {
-      const response = await search(sTerm);
-      const filter = response.filter((item) => {
-        if (Object.keys(item).includes("authors")) {
-          item.authors.forEach((aItem) => {
-            if (aItem.includes(userquery)) foundQuery.push(item);
-            if (aItem.includes(userquery)) setFound(item);
-            if (aItem.includes(userquery)) console.log("filter loop:", item);
-          });
-        }
-      });
-      // console.log("result loop:", await filter)
-      console.log("result loop:", "foundQuery", foundQuery);
-      // return response
-      // return filter
-    });
-    // console.log("getSearchTerms",result)
-    // console.log("getSearchTerms",foundQuery)
-    // return result;
-    // console.log("getSearchTerms", result.then(value => (value)))
-    // console.log("getSearchTerms",result)
-    // console.log("getSearchTerms", result.map( item => item.then(value => (value))))
-    // console.log("getSearchTerms", result.map( item => {
-    //   item.then( value => console.log("value", value))
-    // }))
-    // return result.then(value => (value));
-  };
+  const newF = (response) => {
+    console.log("response",response)
+  }
 
-  useEffect(() => {
-    // getSearch()
-  }, []);
+  // const getSearch = async (searchTerm) => {
+  //   const response = await getSearchTerms(searchTerm.target.value);
+  // };
+  // const getSearchTerms = async (userquery) => {
+  //   let foundQuery = [];
+  //   const result = await SearchTerms.map(async (sTerm) => {
+  //     const response = await search(sTerm);
+  //     const filter = response.filter((item) => {
+  //       if (Object.keys(item).includes("authors")) {
+  //         item.authors.forEach((aItem) => {
+  //           if (aItem.includes(userquery)) foundQuery.push(item);
+  //           if (aItem.includes(userquery)) setFound(item);
+  //           if (aItem.includes(userquery)) console.log("filter loop:", item);
+  //         });
+  //       }
+  //     });
+  //     console.log("result loop:", "foundQuery", foundQuery);
+  //   });
+  // };
 
-  // console.log("found", found)
   return (
     <div className="search-books">
       <div className="search-books-bar">
@@ -77,14 +77,12 @@ function SearchBooks({shelfHandler}) {
             value={term}
             placeholder="Search by title or author"
           />
-
-          {found.length ? "true" : "false"}
         </div>
       </div>
       <div className="search-books-results">
         <ol className="books-grid">
           {
-            found.length && found.map( book => (<BookItem book={book} shelfHandler={shelfHandler} key={Math.random()}/>))
+            //found.length && found.map( book => (<BookItem book={book} shelfHandler={shelfHandler} key={Math.random()}/>))
           }
         </ol>
       </div>
