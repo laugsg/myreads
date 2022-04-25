@@ -40,7 +40,7 @@ function BooksApp() {
   return (
           <Routes>
             <Route exact path="/" element={<ListBooks shelfHandler={shelfHandler} listBooks={listBooks} />} />
-            <Route exact path="/search" element={<SearchBooks shelfHandler={shelfHandler} listBooks={listBooks} />} />
+            <Route exact path="/search" element={<SearchBooks shelfHandler={shelfHandler} />} />
           </Routes>
         );
 }

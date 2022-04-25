@@ -16,6 +16,7 @@ function BookItem({ shelfHandler, book }) {
     },
   ];
 
+
   return (
     <li>
       <div className="book">

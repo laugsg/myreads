@@ -5,9 +5,8 @@ import { Link } from "react-router-dom";
 import Bookshelf from "./Bookshelf";
 
 function ListBooks({ shelfHandler, listBooks }) {
-  const currentlyReading = listBooks.filter(
-    (book) => book.shelf === "currentlyReading"
-  );
+  
+  const currentlyReading = listBooks.filter((book) => book.shelf === "currentlyReading");
   const wantToRead = listBooks.filter((book) => book.shelf === "wantToRead");
   const read = listBooks.filter((book) => book.shelf === "read");
 

@@ -13,13 +13,12 @@ import searchTerms from "../BooksSearchTerms.json";
 class SearchBooks extends Component {
   state = {
     biblio: [],
-    found: [],
+    found: []
   };
 
   obtainDatabase = () => {
     searchTerms.forEach((term) => {
       search(term).then((res) => {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> obtainDatabase")
         this.setState((prevState) => ({
           biblio: [...prevState.biblio, res],
         }));
@@ -35,30 +34,19 @@ class SearchBooks extends Component {
 
   searchTerm = (query) => {
     this.cleanFoundBooks();
-    let booksArr = []
+    let booksArr = [];
     this.state.biblio.map((booksArray) => {
       booksArray.filter((book) => {
         if (Object.keys(book).includes("authors")) {
           book.authors.forEach((author) => {
-            if (author.includes(query)){
-              console.log("author",author)
-              // this.setState((prevState) => {
-              //   return {
-              //       found: [...prevState.found, book],
-              //     } 
-              // });
+            if (author.includes(query)) {
               booksArr.push(book)
             }
           });
         }
-
-        if (book.title.includes(query)){
-          // this.setState((prevState) => ({
-          //   found: [...prevState.found, book],
-          // }));
+        if (book.title.includes(query)) {
           booksArr.push(book)
         }
-
       });
     });
     this.setState({
@@ -70,7 +58,6 @@ class SearchBooks extends Component {
     this.obtainDatabase();
   }
   render() {
-              console.log("book", this.state.found)
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -79,19 +66,17 @@ class SearchBooks extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            {
-              this.state.biblio.length ? (
-                this.state.found.length ? (
-                  this.state.found.map((book) => (
-                    <BookItem book={book} key={Math.random()} />
-                  ))
-                ) : (
-                  "No Results..."
-                )
+            {this.state.biblio ? (
+              this.state.found ? (
+                this.state.found.map((book) => (
+                  <BookItem book={book} shelfHandler={this.props.shelfHandler} key={Math.random()} />
+                ))
               ) : (
-                <Loader />
+                "No Results..."
               )
-            }
+            ) : (
+              <Loader />
+            )}
           </ol>
         </div>
       </div>
