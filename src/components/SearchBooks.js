@@ -13,18 +13,27 @@ class SearchBooks extends Component {
 
   cleanFoundBooks = () => {
     this.setState({
-      found: [],
+      biblio: [],
     });
   };
 
   searchTerm = (query) => {
     if( query.length > 0){
-      search(query).then((res) => {
-        console.log("books", res)
-        this.setState((prevState) => ({
-          biblio:res,
-        }));
+      search(query).then((books) => {
+        books.map( book => {
+          this.props.listBooks.filter( booked => {
+            if( booked.id === book.id ) {
+              book.shelf = booked.shelf
+            }
+          })
+        })
+        this.setState({
+          biblio:books,
+        });
       });
+    }
+    else {
+      this.cleanFoundBooks()
     }
   };
 

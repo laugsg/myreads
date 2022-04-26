@@ -29,7 +29,6 @@ function BooksApp() {
     const id = item.target.name
     const response = await update({id:id}, value);
     setState( response )
-    console.log("response", response)
     init()
   };
 
@@ -40,7 +39,7 @@ function BooksApp() {
   return (
           <Routes>
             <Route exact path="/" element={<ListBooks shelfHandler={shelfHandler} listBooks={listBooks} />} />
-            <Route exact path="/search" element={<SearchBooks shelfHandler={shelfHandler} />} />
+            <Route exact path="/search" element={<SearchBooks shelfHandler={shelfHandler} listBooks={listBooks} />} />
           </Routes>
         );
 }

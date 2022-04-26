@@ -3,6 +3,10 @@ import React from "react";
 function BookItem({ shelfHandler, book }) {
   const categories = [
     {
+      name: "None",
+      category: "None",
+    },
+    {
       name: "Want to Read",
       category: "wantToRead",
     },
@@ -54,12 +58,15 @@ function BookItem({ shelfHandler, book }) {
                   </option>
                 ) : null
               )}
-              <option value="none">None</option>
             </select>
           </div>
         </div>
         <div className="book-title">{book.title}</div>
-        <div className="book-authors">{book.authors}</div>
+        {
+          Object.keys(book).includes("authors")
+            ? book.authors.map( (author, index) => (<div className="book-authors" key={author+index}>{author}</div>))
+            : null
+        }
       </div>
     </li>
   );
